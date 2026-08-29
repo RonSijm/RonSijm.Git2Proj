@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using AwesomeAssertions;
+using System.Xml.Linq;
 using RonSijm.Git2Proj.Cli;
 using RonSijm.Git2Proj.ProjectGeneration;
 
@@ -27,9 +28,9 @@ public sealed class ProjectFileWriterTests
 			var document = XDocument.Load(outputPath);
 			var itemGroup = document.Root!.Element("ItemGroup")!;
 
-			Assert.Single(itemGroup.Elements("Compile"));
-			Assert.Single(itemGroup.Elements("None"));
-			Assert.Equal(Path.Combine("src", "Changed.cs"), itemGroup.Elements("Compile").Single().Element("Link")!.Value);
+			itemGroup.Elements("Compile").Should().ContainSingle();
+			itemGroup.Elements("None").Should().ContainSingle();
+			itemGroup.Elements("Compile").Single().Element("Link")!.Value.Should().Be(Path.Combine("src", "Changed.cs"));
 		}
 		finally
 		{

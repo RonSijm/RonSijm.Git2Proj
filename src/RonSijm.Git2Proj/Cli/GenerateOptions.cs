@@ -17,6 +17,9 @@ internal sealed class GenerateOptions
 	[Option('n', "name", HelpText = "The generated project name. Defaults to <repo-name>.GitChanges.")]
 	public string? ProjectName { get; set; }
 
+	[Option("reference-depth", Default = 0, HelpText = "Recursively include referenced C# source files up to the specified depth.")]
+	public int ReferenceDepth { get; set; }
+
 	[Option("mode", Default = ProjectItemMode.Browse, HelpText = "Browse keeps all changed files as linked None items. Compile adds changed .cs files as Compile items.")]
 	public ProjectItemMode Mode { get; set; }
 

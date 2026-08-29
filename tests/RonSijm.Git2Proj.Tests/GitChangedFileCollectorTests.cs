@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using AwesomeAssertions;
+using System.Diagnostics;
 using RonSijm.Git2Proj.Git;
 
 namespace RonSijm.Git2Proj.Tests;
@@ -37,10 +38,10 @@ public sealed class GitChangedFileCollectorTests
 
 			var files = await GitChangedFileCollector.CollectAsync(repositoryPath, baseRevision: null, includeUntrackedFiles: true, CancellationToken.None);
 
-			Assert.Contains(files, path => path.EndsWith("Tracked.cs", StringComparison.OrdinalIgnoreCase));
-			Assert.Contains(files, path => path.EndsWith("Staged.cs", StringComparison.OrdinalIgnoreCase));
-			Assert.Contains(files, path => path.EndsWith("Untracked.cs", StringComparison.OrdinalIgnoreCase));
-			Assert.DoesNotContain(files, path => path.EndsWith("Deleted.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().Contain(path => path.EndsWith("Tracked.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().Contain(path => path.EndsWith("Staged.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().Contain(path => path.EndsWith("Untracked.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().NotContain(path => path.EndsWith("Deleted.cs", StringComparison.OrdinalIgnoreCase));
 		}
 		finally
 		{
@@ -82,11 +83,11 @@ public sealed class GitChangedFileCollectorTests
 
 			var files = await GitChangedFileCollector.CollectAsync(repositoryPath, baseRevision, includeUntrackedFiles: true, CancellationToken.None);
 
-			Assert.Contains(files, path => path.EndsWith("Committed.cs", StringComparison.OrdinalIgnoreCase));
-			Assert.Contains(files, path => path.EndsWith("AddedInCommit.cs", StringComparison.OrdinalIgnoreCase));
-			Assert.Contains(files, path => path.EndsWith("ModifiedAfterBase.cs", StringComparison.OrdinalIgnoreCase));
-			Assert.Contains(files, path => path.EndsWith("Untracked.cs", StringComparison.OrdinalIgnoreCase));
-			Assert.DoesNotContain(files, path => path.EndsWith("Unchanged.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().Contain(path => path.EndsWith("Committed.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().Contain(path => path.EndsWith("AddedInCommit.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().Contain(path => path.EndsWith("ModifiedAfterBase.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().Contain(path => path.EndsWith("Untracked.cs", StringComparison.OrdinalIgnoreCase));
+			files.Should().NotContain(path => path.EndsWith("Unchanged.cs", StringComparison.OrdinalIgnoreCase));
 		}
 		finally
 		{
@@ -105,14 +106,14 @@ public sealed class GitChangedFileCollectorTests
 	{
 		var (exitCode, _, error) = await RunGitCoreAsync(workingDirectory, arguments);
 
-		Assert.True(exitCode == 0, error);
+		exitCode.Should().Be(0, error);
 	}
 
 	private static async Task<string> RunGitForOutputAsync(string workingDirectory, params string[] arguments)
 	{
 		var (exitCode, output, error) = await RunGitCoreAsync(workingDirectory, arguments);
 
-		Assert.True(exitCode == 0, error);
+		exitCode.Should().Be(0, error);
 		return output.Trim();
 	}
 

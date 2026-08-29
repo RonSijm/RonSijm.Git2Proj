@@ -15,6 +15,7 @@ This uses [`CommandLineParser`](https://www.nuget.org/packages/CommandLineParser
 - Resolves the git repository from `--repo` or the current directory
 - Collects modified, staged, and optionally untracked files
 - Can also generate from all changes since a base git revision with `--sha`
+- Can expand referenced C# source files with `--reference-depth`
 - Generates an SDK-style `.csproj` with linked items
 - Supports:
   - `browse` mode: all files are added as `None`
@@ -38,10 +39,19 @@ dotnet run --project .\src\RonSijm.Git2Proj\RonSijm.Git2Proj.csproj -- generate 
 dotnet run --project .\src\RonSijm.Git2Proj\RonSijm.Git2Proj.csproj -- generate --sha 123abc --mode compile --overwrite
 ```
 
+```powershell
+dotnet run --project .\src\RonSijm.Git2Proj\RonSijm.Git2Proj.csproj -- generate --reference-depth 2 --mode compile --overwrite
+```
+
 With `--sha`, the tool compares the current working tree against that revision, so it includes:
 - files changed in commits since that revision
 - current staged and unstaged tracked changes
 - untracked files unless `--tracked-only` is used
+
+With `--reference-depth`, the tool uses Roslyn source analysis to recursively include referenced `.cs` files:
+- `0`: only the changed files
+- `1`: direct source references from changed C# files
+- `2`: references of those referenced files as well
 
 ## Tool packaging
 
@@ -70,9 +80,3 @@ Then run:
 ```powershell
 git2proj generate
 ```
-
-## Next likely step
-
-Adding **reference depth**
-- use **Roslyn source analysis**
--- not reflection. Reflection operates on compiled assemblies; this tool needs source/project dependency discovery.

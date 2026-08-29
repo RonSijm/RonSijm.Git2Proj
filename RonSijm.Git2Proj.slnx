@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\RonSijm.Git2Proj\RonSijm.Git2Proj.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\RonSijm.Git2Proj.Tests\RonSijm.Git2Proj.Tests.csproj" />
+  </Folder>
+</Solution>

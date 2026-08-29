@@ -6,12 +6,7 @@ namespace RonSijm.Git2Proj.ProjectGeneration;
 
 internal static class ProjectFileWriter
 {
-	public static void Write(
-		string outputPath,
-		string projectName,
-		string repositoryRootPath,
-		IReadOnlyCollection<string> files,
-		ProjectItemMode mode)
+	public static void Write(string outputPath, string projectName, string repositoryRootPath, IReadOnlyCollection<string> files, ProjectItemMode mode)
 	{
 		var outputDirectory = Path.GetDirectoryName(outputPath);
 		if (string.IsNullOrWhiteSpace(outputDirectory))
@@ -53,11 +48,7 @@ internal static class ProjectFileWriter
 			new XElement("RootNamespace", SanitizeIdentifier(projectName)));
 	}
 
-	private static IEnumerable<XElement> CreateItems(
-		string outputDirectory,
-		string repositoryRootPath,
-		IEnumerable<string> files,
-		ProjectItemMode mode)
+	private static IEnumerable<XElement> CreateItems(string outputDirectory, string repositoryRootPath, IEnumerable<string> files, ProjectItemMode mode)
 	{
 		var items = files
 			.OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
@@ -72,11 +63,7 @@ internal static class ProjectFileWriter
 		yield return new XElement("ItemGroup", items);
 	}
 
-	private static XElement CreateItem(
-		string outputDirectory,
-		string repositoryRootPath,
-		string filePath,
-		ProjectItemMode mode)
+	private static XElement CreateItem(string outputDirectory, string repositoryRootPath, string filePath, ProjectItemMode mode)
 	{
 		var itemName = ResolveItemName(filePath, mode);
 		var includePath = Path.GetRelativePath(outputDirectory, filePath);

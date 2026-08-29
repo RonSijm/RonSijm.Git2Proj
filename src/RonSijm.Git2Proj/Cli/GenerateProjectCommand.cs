@@ -1,5 +1,6 @@
 ﻿using RonSijm.Git2Proj.Git;
 using RonSijm.Git2Proj.ProjectGeneration;
+using RonSijm.Git2Proj.SourceAnalysis;
 
 namespace RonSijm.Git2Proj.Cli;
 
@@ -23,6 +24,12 @@ internal static class GenerateProjectCommand
 				return 1;
 			}
 
+			if (options.ReferenceDepth < 0)
+			{
+				Console.Error.WriteLine("--reference-depth must be 0 or greater.");
+				return 1;
+			}
+
 			var changedFiles = await GitChangedFileCollector.CollectAsync(
 				repository.RootPath,
 				options.BaseRevision,
@@ -34,14 +41,25 @@ internal static class GenerateProjectCommand
 				.Where(path => !options.CSharpOnly || string.Equals(Path.GetExtension(path), ".cs", StringComparison.OrdinalIgnoreCase))
 				.ToArray();
 
+			var filesToInclude = await ReferenceDepthExpander.ExpandAsync(
+				repository.RootPath,
+				filteredFiles,
+				options.ReferenceDepth,
+				cancellationToken);
+
 			var projectName = string.IsNullOrWhiteSpace(options.ProjectName)
 				? $"{repository.Name}.GitChanges"
 				: options.ProjectName.Trim();
 
-			ProjectFileWriter.Write(outputPath, projectName, repository.RootPath, filteredFiles, options.Mode);
+			ProjectFileWriter.Write(outputPath, projectName, repository.RootPath, filesToInclude, options.Mode);
 
 			Console.WriteLine($"Generated {outputPath}");
-			Console.WriteLine($"Included {filteredFiles.Length} changed file(s) from {repository.RootPath}");
+			Console.WriteLine($"Included {filesToInclude.Count} file(s) from {repository.RootPath}");
+
+			if (options.ReferenceDepth > 0)
+			{
+				Console.WriteLine($"Added {filesToInclude.Count - filteredFiles.Length} referenced file(s) using depth {options.ReferenceDepth}");
+			}
 
 			return 0;
 		}
