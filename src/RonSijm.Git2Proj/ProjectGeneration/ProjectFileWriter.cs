@@ -6,7 +6,7 @@ namespace RonSijm.Git2Proj.ProjectGeneration;
 
 internal static class ProjectFileWriter
 {
-	public static void Write(string outputPath, string projectName, string repositoryRootPath, IReadOnlyCollection<string> files, ProjectItemMode mode)
+	public static void Write(string outputPath, string projectName, string repositoryRootPath, IReadOnlyCollection<string> files, ProjectItemMode mode, FolderStructureMode folderStructureMode)
 	{
 		var outputDirectory = Path.GetDirectoryName(outputPath);
 		if (string.IsNullOrWhiteSpace(outputDirectory))
@@ -22,7 +22,7 @@ internal static class ProjectFileWriter
 				"Project",
 				new XAttribute("Sdk", "Microsoft.NET.Sdk"),
 				CreateProperties(projectName),
-				CreateItems(outputDirectory, repositoryRootPath, files, mode)));
+				CreateItems(outputDirectory, repositoryRootPath, files, mode, folderStructureMode)));
 
 		var settings = new XmlWriterSettings
 		{
@@ -48,11 +48,11 @@ internal static class ProjectFileWriter
 			new XElement("RootNamespace", SanitizeIdentifier(projectName)));
 	}
 
-	private static IEnumerable<XElement> CreateItems(string outputDirectory, string repositoryRootPath, IEnumerable<string> files, ProjectItemMode mode)
+	private static IEnumerable<XElement> CreateItems(string outputDirectory, string repositoryRootPath, IEnumerable<string> files, ProjectItemMode mode, FolderStructureMode folderStructureMode)
 	{
 		var items = files
 			.OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
-			.Select(file => CreateItem(outputDirectory, repositoryRootPath, file, mode))
+			.Select(file => CreateItem(outputDirectory, repositoryRootPath, file, mode, folderStructureMode))
 			.ToArray();
 
 		if (items.Length == 0)
@@ -63,11 +63,11 @@ internal static class ProjectFileWriter
 		yield return new XElement("ItemGroup", items);
 	}
 
-	private static XElement CreateItem(string outputDirectory, string repositoryRootPath, string filePath, ProjectItemMode mode)
+	private static XElement CreateItem(string outputDirectory, string repositoryRootPath, string filePath, ProjectItemMode mode, FolderStructureMode folderStructureMode)
 	{
 		var itemName = ResolveItemName(filePath, mode);
 		var includePath = Path.GetRelativePath(outputDirectory, filePath);
-		var linkPath = Path.GetRelativePath(repositoryRootPath, filePath);
+		var linkPath = LinkPathResolver.Resolve(repositoryRootPath, filePath, folderStructureMode);
 
 		return new XElement(
 			itemName,

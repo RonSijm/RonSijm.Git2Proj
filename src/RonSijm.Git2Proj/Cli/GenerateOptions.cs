@@ -20,6 +20,9 @@ internal sealed class GenerateOptions
 	[Option("reference-depth", Default = 0, HelpText = "Recursively include referenced C# source files up to the specified depth.")]
 	public int ReferenceDepth { get; set; }
 
+	[Option("folder-structure", Default = FolderStructureMode.Full, HelpText = "How linked files are shown in the generated project: Full keeps the repository-relative folders, Project keeps folders relative to the nearest owning project, Flat uses file names only.")]
+	public FolderStructureMode FolderStructure { get; set; }
+
 	[Option("mode", Default = ProjectItemMode.Browse, HelpText = "Browse keeps all changed files as linked None items. Compile adds changed .cs files as Compile items.")]
 	public ProjectItemMode Mode { get; set; }
 

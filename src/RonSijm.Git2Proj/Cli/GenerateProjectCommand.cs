@@ -51,7 +51,7 @@ internal static class GenerateProjectCommand
 				? $"{repository.Name}.GitChanges"
 				: options.ProjectName.Trim();
 
-			ProjectFileWriter.Write(outputPath, projectName, repository.RootPath, filesToInclude, options.Mode);
+			ProjectFileWriter.Write(outputPath, projectName, repository.RootPath, filesToInclude, options.Mode, options.FolderStructure);
 
 			Console.WriteLine($"Generated {outputPath}");
 			Console.WriteLine($"Included {filesToInclude.Count} file(s) from {repository.RootPath}");

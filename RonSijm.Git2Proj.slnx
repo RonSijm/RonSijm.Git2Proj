@@ -4,6 +4,9 @@
     <File Path="global.json" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/build/Settings/">
+    <File Path="build\Settings\NuGetVersioning.props" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src\RonSijm.Git2Proj\RonSijm.Git2Proj.csproj" />
   </Folder>

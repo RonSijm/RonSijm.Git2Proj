@@ -76,6 +76,8 @@ public sealed class ReferenceDepthExpanderTests
 	public async Task Generate_WithReferenceDepth_AddsReferencedFilesToProject()
 	{
 		var rootPath = CreateTemporaryDirectory();
+		var toolRepositoryRoot = ResolveToolRepositoryRoot();
+		var toolProjectPath = Path.Combine(toolRepositoryRoot, "src", "RonSijm.Git2Proj", "RonSijm.Git2Proj.csproj");
 
 		try
 		{
@@ -128,10 +130,10 @@ public sealed class ReferenceDepthExpanderTests
 
 			var outputPath = Path.Combine(repositoryPath, "Repo.GitChanges.csproj");
 			await RunDotNetAsync(
-				"D:\\source\\RonSijm\\RonSijm.Git2Proj",
+				toolRepositoryRoot,
 				"run",
 				"--project",
-				".\\src\\RonSijm.Git2Proj\\RonSijm.Git2Proj.csproj",
+				toolProjectPath,
 				"--",
 				"generate",
 				"--repo",
@@ -165,6 +167,24 @@ public sealed class ReferenceDepthExpanderTests
 		var path = Path.Combine(Path.GetTempPath(), $"git2proj-tests-{Guid.NewGuid():N}");
 		Directory.CreateDirectory(path);
 		return path;
+	}
+
+	private static string ResolveToolRepositoryRoot()
+	{
+		var currentDirectory = new DirectoryInfo(AppContext.BaseDirectory);
+
+		while (currentDirectory is not null)
+		{
+			var solutionPath = Path.Combine(currentDirectory.FullName, "RonSijm.Git2Proj.slnx");
+			if (File.Exists(solutionPath))
+			{
+				return currentDirectory.FullName;
+			}
+
+			currentDirectory = currentDirectory.Parent;
+		}
+
+		throw new InvalidOperationException("Could not locate the RonSijm.Git2Proj repository root from the test output directory.");
 	}
 
 	private static async Task RunGitAsync(string workingDirectory, params string[] arguments)
